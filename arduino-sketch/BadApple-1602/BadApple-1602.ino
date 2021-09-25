@@ -1,9 +1,11 @@
-#include <SD.h>
-#include <LiquidCrystal.h>
-
+#include <SdFat.h>
+#include <SPI.h>
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
 #include "lrc.h"
+SdFat SD;
 
-LiquidCrystal lcd(4, 5, 6, 7, 8, 9);
+LiquidCrystal_I2C lcd(0x3F,16,2);
 
 byte data_dec[8][8];
 byte data_copied[5];
@@ -18,10 +20,9 @@ File dataFile;
 #define FILE_NAME "BA30.BIN"
 
 void setup() {
-	//Serial.begin(9600);
-	//while (!Serial) ;
-	lcd.begin(16, 2);
-	
+	Wire.begin(2, 0);
+	lcd.init();
+  lcd.backlight();
 	for (uint8_t i = 0; i < 8; i++) {
 		lcd.createChar(i, data_dec[i]);
 	}
@@ -29,7 +30,7 @@ void setup() {
 	lcd.print("Initializing");
 	lcd.setCursor(0, 1);
 	lcd.print("SD card...");
-	if (!SD.begin(10)) {
+	if (!SD.begin(4)) {
 		lcd.clear();
 		lcd.print("Card failed.");
 		return;
@@ -119,4 +120,3 @@ void loop() {
 		}
 	}
 }
-
